@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircuitLab — Simulador de Circuitos</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ HEADER -->
+  <header class="app-header">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect x="2" y="13" width="6" height="2" fill="var(--accent)"/>
+        <rect x="20" y="13" width="6" height="2" fill="var(--accent)"/>
+        <rect x="8" y="8" width="12" height="12" rx="2" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+        <circle cx="14" cy="14" r="2" fill="var(--accent)"/>
+        <rect x="13" y="4" width="2" height="4" fill="var(--accent-dim)"/>
+        <rect x="13" y="20" width="2" height="4" fill="var(--accent-dim)"/>
+      </svg>
+      <span class="logo-text">Circuit<span class="logo-accent">Lab</span></span>
+    </div>
+    <div class="header-info">
+      <span class="version-tag">v1.0</span>
+      <span class="header-subtitle">Simulador de Circuitos DC</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-clear-all" class="action-btn danger" title="Limpiar todo el circuito">
+        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Limpiar
+      </button>
+      <button id="btn-solve" class="action-btn primary" title="Resolver el circuito">
+        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Resolver
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- ═══════════════════════════════════════════════ LEFT: TOOLBAR -->
+    <aside class="toolbar" id="toolbar">
+      <div class="toolbar-section">
+        <span class="toolbar-label">COMPONENTES</span>
+
+        <button class="tool-btn active" data-tool="wire" title="Dibujar cable entre dos nodos">
+          <div class="tool-icon wire-icon">
+            <svg width="32" height="20" viewBox="0 0 32 20">
+              <circle cx="4" cy="10" r="3" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+              <line x1="7" y1="10" x2="25" y2="10" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <circle cx="28" cy="10" r="3" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <span>Cable</span>
+          <kbd>W</kbd>
+        </button>
+
+        <button class="tool-btn" data-tool="resistor" title="Añadir resistencia">
+          <div class="tool-icon">
+            <svg width="40" height="20" viewBox="0 0 40 20">
+              <line x1="2" y1="10" x2="10" y2="10" stroke="var(--accent)" stroke-width="1.5"/>
+              <rect x="10" y="6" width="20" height="8" rx="1" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+              <line x1="30" y1="10" x2="38" y2="10" stroke="var(--accent)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span>Resistencia</span>
+          <kbd>R</kbd>
+        </button>
+
+        <button class="tool-btn" data-tool="voltage" title="Añadir fuente de voltaje">
+          <div class="tool-icon">
+            <svg width="28" height="32" viewBox="0 0 28 32">
+              <line x1="14" y1="2" x2="14" y2="9" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="14" y1="23" x2="14" y2="30" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="14" cy="16" r="9" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+              <text x="14" y="21" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="monospace">V</text>
+            </svg>
+          </div>
+          <span>Fuente V</span>
+          <kbd>V</kbd>
+        </button>
+
+        <button class="tool-btn" data-tool="select" title="Seleccionar y mover componentes">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M5 3l14 9-8 1-3 7z" stroke="var(--accent)" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>Seleccionar</span>
+          <kbd>S</kbd>
+        </button>
+
+        <button class="tool-btn" data-tool="delete" title="Borrar componente">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="var(--color-danger)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>Borrar</span>
+          <kbd>D</kbd>
+        </button>
+      </div>
+
+      <div class="toolbar-section">
+        <span class="toolbar-label">RESISTIVIDAD</span>
+        <button class="tool-btn" data-tool="cable-resistivity" title="Cable con resistividad calculada">
+          <div class="tool-icon">
+            <svg width="40" height="20" viewBox="0 0 40 20">
+              <line x1="2" y1="10" x2="38" y2="10" stroke="var(--accent-warm)" stroke-width="2.5"/>
+              <circle cx="2" cy="10" r="2.5" fill="var(--accent-warm)"/>
+              <circle cx="38" cy="10" r="2.5" fill="var(--accent-warm)"/>
+              <text x="20" y="8" text-anchor="middle" fill="var(--accent-warm)" font-size="6" font-family="monospace">ρ</text>
+            </svg>
+          </div>
+          <span>Cable ρ</span>
+          <kbd>C</kbd>
+        </button>
+      </div>
+
+      <div class="toolbar-section toolbar-help">
+        <span class="toolbar-label">AYUDA</span>
+        <div class="help-text">
+          <p>① Selecciona herramienta</p>
+          <p>② Clic en nodo inicio</p>
+          <p>③ Clic en nodo fin</p>
+          <p>④ Pulsa <strong>Resolver</strong></p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════ CENTER: CANVAS -->
+    <main class="canvas-area">
+      <div class="canvas-topbar">
+        <span class="canvas-status" id="canvas-status">Listo — selecciona una herramienta y haz clic en el lienzo</span>
+        <div class="canvas-controls">
+          <button class="icon-btn" id="btn-zoom-in" title="Acercar">＋</button>
+          <span class="zoom-level" id="zoom-label">100%</span>
+          <button class="icon-btn" id="btn-zoom-out" title="Alejar">－</button>
+          <button class="icon-btn" id="btn-zoom-reset" title="Restablecer zoom">⊡</button>
+        </div>
+      </div>
+      <div class="canvas-wrapper" id="canvas-wrapper">
+        <canvas id="circuit-canvas"></canvas>
+      </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════ RIGHT: PANELS -->
+    <aside class="right-panel">
+
+      <!-- Properties panel -->
+      <section class="panel" id="properties-panel">
+        <div class="panel-header">
+          <span class="panel-title">PROPIEDADES</span>
+          <span class="panel-dot"></span>
+        </div>
+        <div class="panel-body" id="properties-body">
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="17" stroke="var(--border)" stroke-width="1.5"/>
+              <path d="M20 12v10M20 28v2" stroke="var(--border)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>Selecciona un componente para editar sus propiedades</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results panel -->
+      <section class="panel" id="results-panel">
+        <div class="panel-header">
+          <span class="panel-title">RESULTADOS</span>
+          <span class="panel-dot active" id="results-dot"></span>
+        </div>
+        <div class="panel-body">
+          <div class="results-grid">
+            <div class="result-card" id="res-voltage">
+              <div class="result-symbol">V</div>
+              <div class="result-value" id="val-voltage">—</div>
+              <div class="result-unit">Voltios</div>
+            </div>
+            <div class="result-card" id="res-current">
+              <div class="result-symbol">I</div>
+              <div class="result-value" id="val-current">—</div>
+              <div class="result-unit">Amperios</div>
+            </div>
+            <div class="result-card" id="res-resistance">
+              <div class="result-symbol">R</div>
+              <div class="result-value" id="val-resistance">—</div>
+              <div class="result-unit">Ohmios</div>
+            </div>
+            <div class="result-card" id="res-power">
+              <div class="result-symbol">P</div>
+              <div class="result-value" id="val-power">—</div>
+              <div class="result-unit">Vatios</div>
+            </div>
+          </div>
+
+          <div class="formula-section">
+            <div class="formula-title">Ley de Ohm</div>
+            <div class="formula-row">
+              <span class="formula">V = I · R</span>
+              <span class="formula">P = V · I</span>
+            </div>
+            <div class="formula-row">
+              <span class="formula">R<sub>serie</sub> = ΣR</span>
+              <span class="formula">R<sub>paralelo</sub> = 1/Σ(1/R)</span>
+            </div>
+          </div>
+
+          <div class="topology-section" id="topology-section" style="display:none">
+            <div class="formula-title">Topología detectada</div>
+            <div class="topology-badge" id="topology-badge">—</div>
+          </div>
+
+          <div class="resistivity-section" id="resistivity-section" style="display:none">
+            <div class="formula-title">Resistividad (ρ)</div>
+            <div class="formula-row">
+              <span class="formula">R = ρ · L / A</span>
+            </div>
+            <div id="resistivity-result" class="resistivity-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Component list -->
+      <section class="panel" id="component-list-panel">
+        <div class="panel-header">
+          <span class="panel-title">COMPONENTES</span>
+          <span class="comp-count" id="comp-count">0</span>
+        </div>
+        <div class="panel-body" id="component-list-body">
+          <div class="empty-state small">
+            <p>Sin componentes</p>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ PROPERTY MODAL (floating) -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none">
+    <div class="modal" id="property-modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modal-title">Propiedades</span>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Filled dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" id="modal-cancel">Cancelar</button>
+        <button class="action-btn primary" id="modal-apply">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ TOAST -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="solver.js"></script>
+  <script src="circuit.js"></script>
+</body>
+</html>
